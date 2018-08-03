@@ -43,6 +43,13 @@ public class User {
         this.avatar = avatar;
     }
 
+    @Override
+    public String toString() {
+        return firstName + " " + lastName +" (id:"+id+")"+ "\n"
+                + gender + "\n"
+                + email;
+    }
+
     public int getId() {
         return id;
     }

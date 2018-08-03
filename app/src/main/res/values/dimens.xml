@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="cardview_elevation">2dp</dimen>
+    <dimen name="cardview_vertical_margin">8dp</dimen>
+    <dimen name="cardview_image_height">180dp</dimen>
+    <dimen name="margin_small">4dp</dimen>
+    <dimen name="margin_medium">8dp</dimen>
+    <dimen name="margin_large">16dp</dimen>
+    <dimen name="activity_horizontal_margin">@dimen/margin_large</dimen>
+</resources>

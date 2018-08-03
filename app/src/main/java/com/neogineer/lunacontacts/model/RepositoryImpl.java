@@ -31,6 +31,13 @@ public class RepositoryImpl implements Repository {
         if(mCachedUsers==null)
             mCachedUsers = db.userDao().getAllUsers();
 
+        downloadAndSaveUsers(db);
+
+        return mCachedUsers;
+    }
+
+    private void downloadAndSaveUsers(UserRoomDatabase db) {
+
         UsersServiceApi api = RetrofitClientInstance.getRetrofitInstance()
                 .create(UsersServiceApi.class);
         Call<List<User>> call = api.getAllUsers();
@@ -49,12 +56,20 @@ public class RepositoryImpl implements Repository {
                 Log.i("RepoImpl", "oh no :(");
             }
         });
-
-        return mCachedUsers;
     }
 
     @Override
-    public LiveData<User> getUser(int userId) { // not yet impl
+    public LiveData<User> getUser(int userId) {
+        UserRoomDatabase db = UserRoomDatabase.getDatabase(mContext);
+
+        return db.userDao().getUserById(userId);
+    }
+
+    private static User findUserById(List<User> users, int id) {
+        for(User u: users) {
+            if(u.getId()==id)
+                return u;
+        }
         return null;
     }
 }
