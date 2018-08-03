@@ -8,19 +8,22 @@
 
     <ImageView
         android:id="@+id/userImage"
-        android:layout_width="match_parent"
-        android:scaleType="centerInside"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitCenter"
         android:layout_margin="@dimen/margin_large"
-        android:layout_height="200dp" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_large"
+        android:layout_marginLeft="@dimen/margin_large"
         style="@style/Base.TextAppearance.AppCompat.Title"
-        app:layout_constraintTop_toBottomOf="@id/userImage"
-        app:layout_constraintLeft_toLeftOf="@id/userImage"
+        app:layout_constraintTop_toTopOf="@id/userImage"
+        app:layout_constraintBottom_toBottomOf="@id/userImage"
+        app:layout_constraintLeft_toRightOf="@id/userImage"
         tools:text="details" />
 
 </android.support.constraint.ConstraintLayout>
