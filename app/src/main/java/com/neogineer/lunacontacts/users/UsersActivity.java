@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.neogineer.lunacontacts.R;
 import com.neogineer.lunacontacts.api.RetrofitClientInstance;
@@ -34,25 +35,19 @@ public class UsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users);
 
+        TextView textView = findViewById(R.id.textView);
+
         mUsersViewModel = ViewModelProviders.of(this).get(UsersViewModel.class);
         mUsersViewModel.init(this);
 
-        UsersServiceApi api = RetrofitClientInstance.getRetrofitInstance()
-                .create(UsersServiceApi.class);
-
-        Call<List<User>> call = api.getAllUsers();
-
-        call.enqueue(new Callback<List<User>>() {
-            @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                Log.i("MAIN", "oh yeah "+ response.body().get(0).firstName);
-            }
-
-            @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-                Log.i("MAIN", "oh no :(");
-            }
-        });
-
+        new Thread(() -> {
+            mUsersViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
+                @Override
+                public void onChanged(@Nullable List<User> users) {
+                    textView.setText(""+users.size());
+                    Log.i("MainActivity", "data change! "+ users);
+                }
+            });
+        }).start();
     }
 }

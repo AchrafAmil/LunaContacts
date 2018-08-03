@@ -6,6 +6,9 @@ import com.neogineer.lunacontacts.db.User;
 
 import java.util.List;
 
+/**
+ * Main entry point to access data
+ */
 public interface Repository {
 
     LiveData<List<User>> getAllUsers();
