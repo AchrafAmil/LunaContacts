@@ -33,18 +33,14 @@ public class UserDetailsActivity extends AppCompatActivity {
         mUserId = getIntent().getIntExtra(UsersActivity.USER_ID_EXTRA, -1);
 
         mUserDetailsViewModel = ViewModelProviders.of(this).get(UserDetailsViewModel.class);
+        mUserDetailsViewModel.init(this, mUserId);
 
+        mUserDetailsViewModel.getUser().observe(this, user -> {
+            Glide.with(this)
+                    .load(user.avatar)
+                    .into(image);
 
-        new Thread(()->{
-            mUserDetailsViewModel.init(this, mUserId);
-            mUserDetailsViewModel.getUser().observe(this, user -> {
-
-                Glide.with(this)
-                        .load(user.avatar)
-                        .into(image);
-
-                textView.setText(user.toString());
-            });
-        }).start();
+            textView.setText(user.toString());
+        });
     }
 }

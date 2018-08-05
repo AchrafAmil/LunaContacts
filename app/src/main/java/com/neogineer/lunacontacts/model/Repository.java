@@ -11,7 +11,14 @@ import java.util.List;
  */
 public interface Repository {
 
+    /**
+     * use getUsersByName("%%") instead
+     * @return
+     */
+    @Deprecated
     LiveData<List<User>> getAllUsers();
+
+    LiveData<List<User>> getUsersByName(String nameRegex);
 
     LiveData<User> getUser(int userId);
 }

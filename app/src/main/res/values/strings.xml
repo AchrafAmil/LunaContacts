@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Luna Contacts</string>
+    <string name="action_search">Seach by name</string>
+    <string name="search_hint">Search by name</string>
 </resources>

@@ -2,6 +2,7 @@ package com.neogineer.lunacontacts.model;
 
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.neogineer.lunacontacts.api.RetrofitClientInstance;
@@ -17,27 +18,19 @@ import retrofit2.Response;
 
 public class RepositoryImpl implements Repository {
 
-    Context mContext;
-    LiveData<List<User>> mCachedUsers;
+    UserRoomDatabase mDb;
 
     public RepositoryImpl(Context context) {
-        this.mContext = context;
+        mDb = UserRoomDatabase.getDatabase(context);
+        downloadAndSaveUsers();
     }
 
     @Override
     public LiveData<List<User>> getAllUsers() {
-        UserRoomDatabase db = UserRoomDatabase.getDatabase(mContext);
-
-        if(mCachedUsers==null)
-            mCachedUsers = db.userDao().getAllUsers();
-
-        downloadAndSaveUsers(db);
-
-        return mCachedUsers;
+        return this.getUsersByName("%%");
     }
 
-    private void downloadAndSaveUsers(UserRoomDatabase db) {
-
+    private void downloadAndSaveUsers() {
         UsersServiceApi api = RetrofitClientInstance.getRetrofitInstance()
                 .create(UsersServiceApi.class);
         Call<List<User>> call = api.getAllUsers();
@@ -46,7 +39,7 @@ public class RepositoryImpl implements Repository {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 new Thread(()->{
-                    db.userDao().insertAll(response.body());
+                    mDb.userDao().insertAll(response.body());
                     Log.i("RepoImpl", "received new data from web service, size: "+response.body().size());
                 }).start();
             }
@@ -60,16 +53,11 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public LiveData<User> getUser(int userId) {
-        UserRoomDatabase db = UserRoomDatabase.getDatabase(mContext);
-
-        return db.userDao().getUserById(userId);
+        return mDb.userDao().getUserById(userId);
     }
 
-    private static User findUserById(List<User> users, int id) {
-        for(User u: users) {
-            if(u.getId()==id)
-                return u;
-        }
-        return null;
+    @Override
+    public LiveData<List<User>> getUsersByName(String nameRegex){
+        return mDb.userDao().getUsersByName(nameRegex);
     }
 }

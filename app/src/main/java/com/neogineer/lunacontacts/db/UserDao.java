@@ -20,6 +20,9 @@ public interface UserDao {
     @Query("SELECT * FROM user")
     public LiveData<List<User>> getAllUsers();
 
+    @Query("SELECT * FROM user WHERE user.first_name LIKE :name")
+    public LiveData<List<User>> getUsersByName(String name);
+
     @Query("SELECT * FROM user WHERE id= :userId")
     public LiveData<User> getUserById(int userId);
 }

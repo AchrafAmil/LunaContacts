@@ -14,13 +14,19 @@ public class UsersViewModel extends ViewModel {
 
     private Repository mRepository;
     private LiveData<List<User>> mUsers;
+    private String mNameRegex = "%%";
 
     public void init(Context context) {
         this.mRepository = new RepositoryImpl(context);
-        mUsers = mRepository.getAllUsers();
+        mUsers = mRepository.getUsersByName(mNameRegex);
     }
 
-    LiveData<List<User>> getAllUsers(){
+    public LiveData<List<User>> getUsers(){
         return this.mUsers;
+    }
+
+    public void setFilterByName(String filter) {
+        mNameRegex = filter;
+        mUsers = mRepository.getUsersByName(mNameRegex);
     }
 }

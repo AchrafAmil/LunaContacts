@@ -1,34 +1,19 @@
 package com.neogineer.lunacontacts.users;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
+import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.widget.TextView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.widget.Toast;
 
 import com.neogineer.lunacontacts.R;
-import com.neogineer.lunacontacts.api.RetrofitClientInstance;
-import com.neogineer.lunacontacts.api.UsersServiceApi;
-import com.neogineer.lunacontacts.db.User;
-import com.neogineer.lunacontacts.db.UserDao;
-import com.neogineer.lunacontacts.db.UserRoomDatabase;
-import com.neogineer.lunacontacts.model.Repository;
-import com.neogineer.lunacontacts.model.RepositoryImpl;
 import com.neogineer.lunacontacts.user_details.UserDetailsActivity;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class UsersActivity extends AppCompatActivity {
 
@@ -37,6 +22,7 @@ public class UsersActivity extends AppCompatActivity {
     private UsersViewModel mUsersViewModel;
     private RecyclerView mRecycler;
     private LinearLayoutManager mLayoutManager;
+    private SearchView mSearchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,25 +34,58 @@ public class UsersActivity extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecycler.setLayoutManager(mLayoutManager);
 
-
         mUsersViewModel = ViewModelProviders.of(this).get(UsersViewModel.class);
         mUsersViewModel.init(this);
 
-        new Thread(() -> {
-            mUsersViewModel.getAllUsers().observe(this, new Observer<List<User>>() {
-                @Override
-                public void onChanged(@Nullable List<User> users) {
-                    mRecycler.setAdapter(new UsersAdapter(users, UsersActivity.this::openUserDetails));
-                }
-            });
-        }).start();
+        loadUsers();
+    }
 
+    private void loadUsers() {
+        mUsersViewModel.getUsers().observe(this, users ->{
+            UsersAdapter adapter = (UsersAdapter) mRecycler.getAdapter();
+            if(adapter==null)
+                mRecycler.setAdapter(new UsersAdapter(users, UsersActivity.this::openUserDetails));
+            else
+                adapter.setUsers(users);
+        });
+    }
 
+    private void onNewFilter(String filter) {
+        mUsersViewModel.getUsers().removeObservers(this);
+        mUsersViewModel.setFilterByName("%"+filter+"%");
+        loadUsers();
     }
 
     private void openUserDetails(int userId) {
         Intent i = new Intent(this, UserDetailsActivity.class);
         i.putExtra(USER_ID_EXTRA, userId);
         startActivity(i);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        mSearchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
+        mSearchView.setMaxWidth(Integer.MAX_VALUE);
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                onNewFilter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                onNewFilter(query);
+                return false;
+            }
+        });
+        return true;
     }
 }
