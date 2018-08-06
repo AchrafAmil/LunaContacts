@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingLeft="@dimen/margin_large"
+    android:paddingRight="@dimen/margin_large"
+    android:paddingTop="@dimen/margin_medium"
+    android:paddingBottom="@dimen/margin_medium"
+    android:background="?android:attr/selectableItemBackground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/relativeLayout">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteY="16dp"
+        app:civ_border_width="1dp"
+        app:civ_border_color="@color/colorPrimaryDark" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_large"
+        android:layout_marginStart="@dimen/margin_large"
+        style="@style/Base.TextAppearance.AppCompat.Medium"
+        app:layout_constraintTop_toTopOf="@id/image"
+        app:layout_constraintBottom_toBottomOf="@id/image"
+        app:layout_constraintLeft_toRightOf="@id/image"
+        tools:text="details" />
+
+</android.support.constraint.ConstraintLayout>

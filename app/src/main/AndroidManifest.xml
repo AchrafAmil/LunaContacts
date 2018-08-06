@@ -30,7 +30,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".user_details.UserDetailsActivity"/>
+
+        <activity
+            android:name=".user_details.UserDetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
     </application>
 
 </manifest>
