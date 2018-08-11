@@ -26,19 +26,5 @@ public class ExampleUnitTest {
     @Test
     public void createUserInDb(){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                UserRoomDatabase db = UserRoomDatabase.getDatabase(ShadowApplication.getInstance().getApplicationContext());
-                UserDao dao = db.userDao();
-                List<User> users = new LinkedList<>();
-                User u = new User();
-                u.firstName = "Achraf";
-                users.add(u);
-                dao.insertAll(users);
-            }
-        }).start();
-
-
     }
 }

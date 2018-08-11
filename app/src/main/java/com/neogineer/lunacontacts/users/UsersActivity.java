@@ -21,7 +21,7 @@ public class UsersActivity extends AppCompatActivity {
 
     private UsersViewModel mUsersViewModel;
     private RecyclerView mRecycler;
-    private LinearLayoutManager mLayoutManager;
+    private UsersAdapter mAdapter;
     private SearchView mSearchView;
 
     @Override
@@ -29,10 +29,7 @@ public class UsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_users);
 
-        mRecycler = findViewById(R.id.recycler);
-        mRecycler.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecycler.setLayoutManager(mLayoutManager);
+        setupRecycler();
 
         mUsersViewModel = ViewModelProviders.of(this).get(UsersViewModel.class);
         mUsersViewModel.init(this);
@@ -40,14 +37,17 @@ public class UsersActivity extends AppCompatActivity {
         loadUsers();
     }
 
+    private void setupRecycler() {
+        mRecycler = findViewById(R.id.recycler);
+        mRecycler.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecycler.setLayoutManager(layoutManager);
+        mAdapter = new UsersAdapter(UsersActivity.this::openUserDetails);
+        mRecycler.setAdapter(mAdapter);
+    }
+
     private void loadUsers() {
-        mUsersViewModel.getUsers().observe(this, users ->{
-            UsersAdapter adapter = (UsersAdapter) mRecycler.getAdapter();
-            if(adapter==null)
-                mRecycler.setAdapter(new UsersAdapter(users, UsersActivity.this::openUserDetails));
-            else
-                adapter.setUsers(users);
-        });
+        mUsersViewModel.getUsers().observe(this, users -> mAdapter.submitList(users));
     }
 
     private void onNewFilter(String filter) {

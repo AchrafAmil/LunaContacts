@@ -5,16 +5,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClientInstance {
 
-    private static Retrofit retrofit;
+    private static Retrofit mRetrofitInstance;
     private static final String BASE_URL = "http://server.lunabee.studio:11111/";
 
     public static Retrofit getRetrofitInstance() {
-        if (retrofit == null) {
-            retrofit = new retrofit2.Retrofit.Builder()
+        if (mRetrofitInstance == null) {
+            mRetrofitInstance = new retrofit2.Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-        return retrofit;
+        return mRetrofitInstance;
     }
 }

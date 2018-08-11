@@ -47,7 +47,12 @@ public class User {
     public String toString() {
         return firstName + " " + lastName +" (id:"+id+")"+ "\n"
                 + gender + "\n"
-                + email;
+                + email + "\n"
+                + "avatar: "+ avatar;
+    }
+
+    public String getFullName(){
+        return firstName+ " "+ lastName;
     }
 
     public int getId() {

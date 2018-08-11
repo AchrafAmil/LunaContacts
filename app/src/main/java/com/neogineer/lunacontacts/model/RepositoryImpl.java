@@ -1,6 +1,9 @@
 package com.neogineer.lunacontacts.model;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.paging.DataSource;
+import android.arch.paging.LivePagedListBuilder;
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -18,37 +21,17 @@ import retrofit2.Response;
 
 public class RepositoryImpl implements Repository {
 
-    UserRoomDatabase mDb;
+    private static final int DATABASE_PAGE_SIZE = 20;
+
+    private UserRoomDatabase mDb;
 
     public RepositoryImpl(Context context) {
         mDb = UserRoomDatabase.getDatabase(context);
-        downloadAndSaveUsers();
     }
 
     @Override
-    public LiveData<List<User>> getAllUsers() {
+    public LiveData<PagedList<User>> getAllUsers() {
         return this.getUsersByName("%%");
-    }
-
-    private void downloadAndSaveUsers() {
-        UsersServiceApi api = RetrofitClientInstance.getRetrofitInstance()
-                .create(UsersServiceApi.class);
-        Call<List<User>> call = api.getAllUsers();
-
-        call.enqueue(new Callback<List<User>>() {
-            @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                new Thread(()->{
-                    mDb.userDao().insertAll(response.body());
-                    Log.i("RepoImpl", "received new data from web service, size: "+response.body().size());
-                }).start();
-            }
-
-            @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-                Log.i("RepoImpl", "oh no :(");
-            }
-        });
     }
 
     @Override
@@ -57,7 +40,15 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public LiveData<List<User>> getUsersByName(String nameRegex){
-        return mDb.userDao().getUsersByName(nameRegex);
+    public LiveData<PagedList<User>> getUsersByName(String nameRegex){
+        DataSource.Factory<Integer, User> dataSourceFactory = mDb.userDao().getUsersByName(nameRegex);
+
+        return new LivePagedListBuilder<>(dataSourceFactory,
+                new PagedList.Config.Builder()
+                        .setPageSize(DATABASE_PAGE_SIZE)
+                        .setInitialLoadSizeHint(DATABASE_PAGE_SIZE)
+                        .build())
+                .setBoundaryCallback(new UserBoundaryCallback(mDb))
+                .build();
     }
 }

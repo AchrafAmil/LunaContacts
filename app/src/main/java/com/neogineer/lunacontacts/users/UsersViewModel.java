@@ -2,6 +2,7 @@ package com.neogineer.lunacontacts.users;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
+import android.arch.paging.PagedList;
 import android.content.Context;
 
 import com.neogineer.lunacontacts.db.User;
@@ -13,7 +14,7 @@ import java.util.List;
 public class UsersViewModel extends ViewModel {
 
     private Repository mRepository;
-    private LiveData<List<User>> mUsers;
+    private LiveData<PagedList<User>> mUsers;
     private String mNameRegex = "%%";
 
     public void init(Context context) {
@@ -21,7 +22,7 @@ public class UsersViewModel extends ViewModel {
         mUsers = mRepository.getUsersByName(mNameRegex);
     }
 
-    public LiveData<List<User>> getUsers(){
+    public LiveData<PagedList<User>> getUsers(){
         return this.mUsers;
     }
 
